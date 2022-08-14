@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="content-type" content="text/html;charset =windows-1254">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script src="cordova.js"></script>
+    <script src="platformOverrides.js"></script>
+    <script src="scripts/domain/offline.js"></script>
+    <script src="scripts/util/FrontEnd.js"></script>
+    <script>
+        var toLoadCssFiles = [];
+        toLoadCssFiles.push("jquery.mobile-1.4.5.css");
+        toLoadCssFiles.push("index.css");
+        toLoadCssFiles.push("toastr.css");
+        toLoadCssFiles.push("loader.css");
+        toLoadCssFiles.push("green/css/style.css");
+        toLoadCssFiles.push("green/colors/green/green.css");
+        toLoadCssFiles.push("green/css/swipebox.css");
+        FrontEnd.loadCsswithJs(toLoadCssFiles);
+    </script>
+    <script src="scripts/lib/jquery-2.1.4.min.js"></script>
+    <script src="scripts/lib/jquery.mobile-1.4.5.min.js"></script>
+    <script src="scripts/util/init.js"></script>
+    <script src="scripts/lib/toastr.js"></script>
+    <script src="scripts/domain/App.js"></script>
+    <script src="scripts/service/WsService.js"></script>
+    <script src="scripts/service/UrunService.js"></script>
+    <script src="scripts/service/CagriService.js"></script>
+    <script src="scripts/util/util.js"></script>
+    <script src="scripts/util/connection.js"></script>
+    <script src="scripts/util/Messages.js"></script>
+    <script src="scripts/dao/AlertDao.js"></script>
+    <script src="scripts/util/Toastr.js"></script>
+    <title>SOS Servis Otomasyon Sistemi</title>
+
+    <!-- Green theme -->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&amp;subset=latin-ext" rel="stylesheet">
+    <!-- Green theme -->
+
+             <!-- START: BOOTSTRAP JS -->
+             <script src="bootstrap/js/src/alert.js"></script>
+             <script src="bootstrap/js/src/button.js"></script>
+             <script src="bootstrap/js/src/carousel.js"></script>
+             <script src="bootstrap/js/src/collapse.js"></script>
+             <script src="bootstrap/js/src/dropdown.js"></script>
+             <script src="bootstrap/js/src/modal.js"></script>
+             <script src="bootstrap/js/src/popover.js"></script>
+             <script src="bootstrap/js/src/tab.js"></script>
+             <script src="bootstrap/js/src/util.js"></script>
+             <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+             <!-- END: BOOTSTRAP JS -->
+             
+             <!-- START: BOOTSTRAP CSS -->
+             <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap.min.css"/>
+             <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap-grid.min.css"/>
+             <!-- END: BOOTSTRAP CSS -->
+
+</head>
+
+<body>
+<div data-role="page" id="one" data-theme="a" data-url="one">
+    <div id="header">
+        <div class="gohome radius20"><a onclick="offline.util.navigator('index.html')" id="homebutton"><i
+                class="fa fa-list green-icon" aria-hidden="true"></i><span id="bekleyenCagriAdet">0</span></a></div>
+        <div class="gohome radius20"><a onclick="offline.util.navigator('Mesajlar.html?type=WARN')"
+                                        id="contactbutton"><i class="fa fa-bullhorn green-icon"
+                                                              aria-hidden="true"></i><span
+                id="bekleyenUyariAdet">0</span></a></div>
+        <div class="gohome radius20"><a onclick="offline.util.navigator('Mesajlar.html?type=URGENT')"
+                                        id="contactbutton"><i class="fa fa-bell-o green-icon"
+                                                              aria-hidden="true"></i><span
+                id="bekleyenDuyuruAdet">0</span></a></div>
+        <div class="gohome radius20"><a onclick="offline.util.navigator('guncelle.html')" id="contactbutton"><i
+                class="fa fa-refresh green-icon" aria-hidden="true"></i><span id="bekleyenGuncellemeAdet">0</span></a>
+        </div>
+        <div class="gomenu radius20"><a onclick="offline.util.exitApp()" id="contactbutton"><i
+                class="fa fa-sign-out green-icon" aria-hidden="true"></i></a></div>
+        <div class="gomenu radius20"><a onclick="offline.util.navigator('MainPage.html')" id="contactbutton"><i
+                class="fa fa-home green-icon" aria-hidden="true"></i></a></div>
+    </div>
+
+    <div data-role="main" class="main-content" data-position="fixed">
+        <div data-role="tabs">
+            <div data-role="navbar" id="tabs" data-iconpos="left" class="nav-green ui-nodisc-icon ui-alt-icon">
+
+                <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all ui-grid-d">
+                    <li><a href="#tab1" id="btnGaranti" class="green-tab" data-ajax="false">Garanti Sorgula</a></li>
+                    <li><a href="#tab2" id="btnFiyat" class="green-tab" data-ajax="false">Fiyat Sorgula</a></li>
+                </ul>
+            </div>
+
+            <div id="tab1" class="ui-content">
+                <div class="ui-body ui-body-a ui-corner-all">
+
+                    <div class="ui-field-contain">
+                        <label for="txtUrunAnaGrupKodu">Ürün Ana Grubu</label>
+                        <select id="urunAnaGrpList"></select>
+                        <input type="hidden" readonly id="txtUrunAnaGrupKodu" name="txtUrunAnaGrupKodu"/>
+                        <input type="hidden" readonly id="txtMamAnagrp" name="txtMamAnagrp"/>
+                    </div>
+
+                    <div class="ui-field-contain">
+                        <label for="txtUrunKodu">Ürün Kodu</label>
+                        <select id="urunList"></select>
+                        <input type="hidden" readonly id="txtUrunKodu" name="txtUrunKodu"/>
+                        <input type="hidden" readonly id="txtUrunAdi" name="txtUrunAdi"/>
+                    </div>
+
+
+                    <div class="ui-field-contain">
+                        <label for="txtBarkod">Barkod No</label>
+                        <input type="text" id="txtBarkod" name="txtBarkod"/>
+                    </div>
+
+                    <div class="ui-field-contain">
+                        <label for="txtFaturaTarihi">Fatura Tarihi</label>
+                        <input type="date" id="txtFaturaTarihi" name="txtFaturaTarihi"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <a class="toolbar-btn ui-link ui-btn ui-shadow ui-corner-all" id="btnSorgu">
+                            <span><i class="fa fa-search" aria-hidden="true"></i></span>Sorgula
+                        </a>
+                    </div>
+                    <div class="ui-content" id="garantiSorguMain">
+
+                    </div>
+
+                </div>
+
+            </div>
+            <div id="tab2" class="ui-content">
+                <div class="ui-body ui-body-a ui-corner-all" id="fiyat">
+                    <div class="ui-field-contain">
+                        <label for="slcIslemTip">İşlem Tipi</label>
+                        <select name="slcIslemTip" id="slcIslemTip">
+                            <option value=""></option>
+                            <option value="ISC">İşçilik(ISC)</option>
+                            <option value="MLZ">Parça(MLZ)</option>
+                        </select>
+                        <input type="hidden" id="txtIslemTip"/>
+                    </div>
+
+                    <!--div class="ui-field-contain" id="div-malzeme-kod">
+                        <label for="txtMalzemeKod">Malzeme Kodu</label>
+                        <input type="text" id="txtMalzemeKod"/>
+                    </div-->
+
+                    <div class="ui-field-contain" id="mamanagrp-div">
+                        <label for="txtMamAnagrp">Ürün Ana Grubu</label>
+                        <select id="urunAnaGrpList1"></select>
+                        <input type="hidden" readonly id="txtUrunAnaGrupKodu" name="txtUrunAnaGrupKodu"/>
+                        <input type="hidden" readonly id="txtMamAnagrp" name="txtMamAnagrp"/>
+                    </div>
+
+                    <div class="ui-field-contain" id="urun-div">
+                        <label for="txtUrunKodu">Ürün</label>
+                        <select id="urunList1"></select>
+                        <input type="hidden" readonly id="txtUrunKodu" name="txtUrunKodu"/>
+                        <input type="hidden" readonly id="txtUrunAdi" name="txtUrunAdi"/>
+                    </div>
+
+                    <div class="ui-field-contain" id="parca-iscilik-div">
+                        <label for="detayList1">Parça/İşçilik</label>
+                        <select id="detayList1"></select>
+                        <input type="hidden" readonly id="txtDetayKodu" name="txtDetayKodu"/>
+                        <input type="hidden" readonly id="txtDetayAciklama" name="txtDetayAciklama"/>
+                    </div>
+
+
+                    <div class="ui-field-contain" id="malzeme-kod-div">
+                        <label for="txtMalzemeKod">Malzeme Kodu</label>
+                        <fieldset data-role="controlgroup" data-type="horizontal" data-filter="true"
+                                  data-input="txtMalzemeKod">
+                            <div class="islemkodu-input"><input type="text" name="txtMalzemeKod" id="txtMalzemeKod"
+                                                                data-wrapper-class="controlgroup-textinput"></div>
+                            <a href="#islemListeGosterim" class="toolbar-btn input-btn ui-btn" data-rel="popup"
+                               data-transition="slideup" data-role="button"
+                               onclick="offline.sorgula.getMalzemelerForFiyatSorgula()"
+                               id="btnIslemLow"><span><i class="fa fa-search" aria-hidden="true"></i></span></a>
+                        </fieldset>
+                    </div>
+
+                    <div id="islemListeGosterim" data-role="popup" data-theme="c" data-overlay-theme="c"
+                         style="overflow: scroll; height: 80%"
+                         data-dismissible="false">
+                        <div data-role="header" data-theme="a">
+                            <h1> Malzemeler </h1>
+                            <a class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-icon-notext ui-btn-inherit ui-shadow ui-corner-all"
+                               href="#" data-rel="back"></a>
+                        </div>
+                        <div class="ui-content" role="main" style="overflow: scroll">
+                            <ul id="malzemeListe" data-filter-placeholder="Malzeme bilgisi giriniz." data-filter="true"
+                                data-role="listview"
+                                data-inset="true"></ul>
+                        </div>
+                    </div>
+
+
+                    <div class="ui-field-contain">
+                        <a class="toolbar-btn ui-link ui-btn ui-shadow ui-corner-all" id="btnFiyatSorgu">
+                            <span><i class="fa fa-search" aria-hidden="true"></i></span>Sorgula
+                        </a>
+                    </div>
+                    <div class="ui-content" id="fiyatSorguMain">
+
+
+                    </div>
+                    <div id="parcaIscilikListeDiv" data-role="popup" data-theme="c" data-overlay-theme="c"
+                         data-dismissible="false">
+                        <div data-role="header" data-theme="a">
+                            <h1>Parça İşçilik </h1>
+                            <a class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-icon-notext ui-btn-inherit ui-shadow ui-corner-all"
+                               href="#fiyat"
+                               data-rel="back"></a>
+                        </div>
+                        <div class="ui-content" role="main">
+                            <ul id="malzemeKodBilgiSorguListe" data-filter-placeholder=" Malzeme kodunu Giriniz"
+                                data-filter="true"
+                                data-role="listview" data-inset="true"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="footer">
+        <div class="col-left">
+            <img class="footer-logo" src="images/sos-logo.png">
+        </div>
+        <div class="col-right">
+            <h4 class="ui-title" role="heading" aria-level="1" id="txtFooter">SOS Servis Otomasyon Sistemi (SOS)</h4>
+        <div class="col-right">
+            <h6 class="ui-title" role="heading" aria-level="1" id="txtFooter">SOS Servis Otomasyon Sistemi (SOS)</h6>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+
+
+    <div data-role="panel" id="nav-panel" data-position="left" data-display="push" data-dismissible="true"
+         data-theme="c"
+         class="ui-panel ui-panel-position-left ui-panel-display-push ui-body-a ui-panel-animate ui-panel-open">
+        <ul data-role="listview" id="listMenu"></ul>
+        <hr/>
+        <br/>
+        <div>
+            <div data-position="fixed" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-user"
+                 id="txtKullanici"></div>
+
+            <div data-position="fixed" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-shop"
+                 id="txtServis"></div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="scripts/page/Sorgula.js"></script>
+<script src="scripts/util/lovAndComboUtil.js"></script>
+<script src="scripts/dao/UrunDao.js"></script>
+<script src="scripts/dao/UrunIscDao.js"></script>
+<script src="scripts/dao/UrunMlzDao.js"></script>
+<script src="scripts/domain/UrunIsc.js"></script>
+<script src="scripts/domain/UrunAnaGrp.js"></script>
+<script src="scripts/dao/UrunAnaGrpDao.js"></script>
+<script src="scripts/dao/FiyatDao.js"></script>
+<script src="scripts/domain/Fiyat.js"></script>
+<script src="scripts/domain/UrunMlz.js"></script>
+<script src="scripts/util/serviceCallbackObj.js"></script>
+</body>
+
+</html>

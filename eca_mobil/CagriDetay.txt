@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <!--meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script src="cordova.js"></script>
+    <script src="platformOverrides.js"></script>
+    <script src="scripts/domain/offline.js"></script>
+    <script src="scripts/util/FrontEnd.js"></script>
+    <script>
+        var toLoadCssFiles = [];
+        toLoadCssFiles.push("cagriDetay.css");
+        toLoadCssFiles.push("jquery.mobile-1.4.5.css");
+        toLoadCssFiles.push("toastr.css");
+        toLoadCssFiles.push("loader.css");
+        toLoadCssFiles.push("green/css/style.css");
+        toLoadCssFiles.push("green/colors/green/green.css");
+        toLoadCssFiles.push("green/css/swipebox.css");
+        FrontEnd.loadCsswithJs(toLoadCssFiles);
+    </script>
+    <script src="scripts/lib/jquery-2.1.4.js"></script>
+    <script src="scripts/lib/jquery.pajinate.min.js"></script>
+    <script src="scripts/lib/jquery.mobile-1.4.5.min.js"></script>
+    <script src="scripts/lib/jquery.maskedinput.js" type="text/javascript"></script>
+    <script src="scripts/util/init.js"></script>
+    <script src="scripts/domain/App.js"></script>
+    <script src="scripts/service/WsService.js"></script>
+    <script src="scripts/service/CagriService.js"></script>
+    <script src="scripts/service/LoginService.js"></script>
+    <script src="scripts/util/util.js"></script>
+    <script src="scripts/util/connection.js"></script>
+    <script src="scripts/dao/AlertDao.js"></script>
+    <script src="scripts/dao/TestoDao.js"></script>
+    <script src="scripts/util/Messages.js"></script>
+    <script src="scripts/lib/toastr.js"></script>
+    <script src="scripts/util/Toastr.js"></script>
+    <script src="scripts/util/Testo.js"></script>
+    <script src="scripts/util/Permissions.js"></script>
+    <title>SOS Servis Otomasyon Sistemi</title>
+    <!-- Green theme -->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&amp;subset=latin-ext" rel="stylesheet">
+    <!-- Green theme -->
+                <!-- START: BOOTSTRAP JS -->
+                <script src="bootstrap/js/src/alert.js"></script>
+                <script src="bootstrap/js/src/button.js"></script>
+                <script src="bootstrap/js/src/carousel.js"></script>
+                <script src="bootstrap/js/src/collapse.js"></script>
+                <script src="bootstrap/js/src/dropdown.js"></script>
+                <script src="bootstrap/js/src/modal.js"></script>
+                <script src="bootstrap/js/src/popover.js"></script>
+                <script src="bootstrap/js/src/tab.js"></script>
+                <script src="bootstrap/js/src/util.js"></script>
+                <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+                <!-- END: BOOTSTRAP JS -->
+                
+                <!-- START: BOOTSTRAP CSS -->
+                <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap-grid.min.css"/>
+                <!-- END: BOOTSTRAP CSS -->
+</head>
+
+<body>
+<div class="upage" id="mainpage" data-role="page">
+    <div class="upage-outer">
+        <div id="header">
+            <div class="gohome radius20"><a onclick="offline.util.navigator('index.html')" id="homebutton"><i
+                    class="fa fa-list green-icon" aria-hidden="true"></i><span id="bekleyenCagriAdet">0</span></a></div>
+            <div class="gohome radius20"><a onclick="offline.util.navigator('Mesajlar.html?type=WARN')"
+                                            id="contactbutton"><i class="fa fa-bullhorn green-icon"
+                                                                  aria-hidden="true"></i><span
+                    id="bekleyenUyariAdet">0</span></a></div>
+            <div class="gohome radius20"><a onclick="offline.util.navigator('Mesajlar.html?type=URGENT')"
+                                            id="contactbutton"><i class="fa fa-bell-o green-icon"
+                                                                  aria-hidden="true"></i><span
+                    id="bekleyenDuyuruAdet">0</span></a></div>
+            <div class="gohome radius20"><a onclick="offline.util.navigator('guncelle.html')" id="contactbutton"><i
+                    class="fa fa-refresh green-icon" aria-hidden="true"></i><span
+                    id="bekleyenGuncellemeAdet">0</span></a></div>
+            <div class="gomenu radius20"><a onclick="offline.util.exitApp()" id="contactbutton"><i
+                    class="fa fa-sign-out green-icon" aria-hidden="true"></i></a></div>
+            <div class="gomenu radius20"><a onclick="offline.util.navigator('MainPage.html')" id="contactbutton"><i
+                    class="fa fa-home green-icon" aria-hidden="true"></i></a></div>
+        </div>
+    </div>
+
+    <div class="header-toolbar  ui-header">
+        <div class="ui-btn-left ui-controlgroup ui-controlgroup-horizontal ui-corner-all">
+            <div class="ui-controlgroup-controls ">
+                <a class="toolbar-btn" onclick="offline.util.navigator('index.html?islem=GERI')" id="btnGeri">
+                    <span><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></span>Geri
+                </a>
+
+            </div>
+        </div>
+        <span class="ui-title"></span>
+        <div class="ui-btn-right ui-controlgroup ui-controlgroup-horizontal ui-corner-all">
+            <div class="ui-controlgroup-controls ">
+                <a class="toolbar-btn" onclick="mstKaydet('ACIK','EKRAN')" id="btnKaydet">
+                    <span><i class="fa fa-check" aria-hidden="true"></i></span>Kaydet
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div data-role="content">
+        <div data-role="tabs">
+            <div data-role="navbar" id="tabs" data-iconpos="left" class="ui-nodisc-icon ui-alt-icon nav-green">
+
+                <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all ui-grid-d">
+                    <li><a href="#tab1" id="btncagri" class="green-tab" data-ajax="false">Hizmet Bilgileri</a></li>
+                    <li><a href="#tab2" id="btnurun" class="green-tab" data-ajax="false">Müþteri Bilgileri</a></li>
+                    <li><a href="#tab3" id="btnhizmet" class="green-tab" data-ajax="false">Ürün Bilgileri</a></li>
+                    <li><a href="#tab4" id="btnkapat" class="green-tab" data-ajax="false">Servis Bilgileri</a></li>
+                    <li><a href="#tab5" id="btnkaydet" class="green-tab" data-ajax="false">Detaylar</a></li>
+                </ul>
+            </div>
+
+            <div id="tab1" class="ui-content">
+                <div class="ui-body ui-body-a ui-corner-all nav-box">
+                    <div class="ui-field-contain">
+                        <label for="txtRandevuTarihi">Randevu Tarihi</label>
+                        <input type="text" readonly id="txtRandevuTarihi" name="txtRandevuTarihi"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtCagriTarihi">Çaðrý Açýlýþ Tarihi</label>
+                        <input type="text" readonly id="txtCagriTarihi" name="txtCagriTarihi"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtHizmetTipi">Hizmet Tipi</label>
+                        <input type="text" readonly id="txtHizmetTipi" name="txtHizmetTipi"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtMamAnagrp">Ürün Ana Grubu</label>
+                        <input type="text" readonly id="txtMamAnagrp" name="txtMamAnagrp"/>
+                        <input type="hidden" readonly id="txtMamAnagrpKod" name="txtMamAnagrpKod"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtBasvuruNedeni">Baþvuru Nedeni</label>
+                        <input type="text" readonly id="txtBasvuruNedenAdi" name="txtBasvuruNedenAdi"/>
+                        <input type="hidden" readonly id="txtBasvuruNedeni" name="txtBasvuruNedeni"/>
+
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtSeqNo">Hizmet Formu No</label>
+                        <input type="text" readonly id="txtSeqNo" name="txtSeqNo"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtDurum">Durum</label>
+                        <input type="text" readonly id="txtDurum" name="txtDurum"/>
+                    </div>
+
+                    <div class="ui-field-contain">
+                        <label for="txtCMNo">Çaðrý No</label>
+                        <input type="text" readonly id="txtCMNo" name="txtCMNo"/>
+                    </div>
+                </div>
+
+                <div data-role="collapsible" data-content-theme="c">
+                    <h4>Testo Ölçüm Bilgisi</h4>
+                    <a href="#" data-role="button" class="ui-btn ui-shadow ui-corner-all" id="btnTestoOlcuAl">
+                        <span><i class="fa fa-gears" aria-hidden="true"></i></span>
+                        Testo ile Ölçüm Al
+                    </a>
+                    <div class="ui-content" data-role="main" id="testoDataTable">
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="tab2" class="ui-content">
+
+                <div class="col uib_col_41 single-col" data-uib="layout/col" data-ver="0">
+                    <div class="ui-body ui-body-a ui-corner-all nav-box">
+
+                        <div class="ui-field-contain">
+                            <label for="txtMusteri">Müþteri</label>
+                            <input type="text" readonly id="txtMusteri" name="txtMusteri"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtEvTel">Ev Telefonu</label>
+                            <input type="tel" readonly id="txtEvTel" name="txtEvTel"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtIsTel">Ýþ Telefonu</label>
+                            <input type="tel" readonly id="txtIsTel" name="txtIsTel"/>
+                        </div>
+
+                        <div class="ui-field-contain">
+                            <label for="txtCepTel">Cep Telefonu</label>
+                            <input type="tel" readonly id="txtCepTel" name="txtCepTel"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtEposta">E-Posta</label>
+                            <input type="email" readonly id="txtEposta" name="txtEposta"/>
+                        </div>
+
+                    </div>
+                    <div class="ui-body ui-body-a ui-corner-all nav-box">
+
+                        <div class="ui-field-contain">
+                            <a href="#" data-role="button" class="ui-btn ui-shadow ui-corner-all"
+                               onclick="offline.CagriDetay.util.adresBilgileriKilitAc()"
+                               id="btnAdresKilitAc"><span>
+                                <i class="fa fa-lock" aria-hidden="true"></i>
+                            </span>Adresi Degistir</a>
+
+                            <a href="#" data-role="button" class="ui-btn ui-shadow ui-corner-all"
+                               onclick="offline.CagriDetay.util.adresBilgileriniKaydet()"
+                               id="btnAdresKaydet"><span>
+                                <i class="fa fa-unlock" aria-hidden="true"></i>
+                                </span>Adresi Kaydet</a>
+
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="slcSehir">Þehir</label>
+                            <!--input type="text" readonly="readonly" id="txtSehir" name="txtSehir"/-->
+                            <select id="slcSehir" name="slcSehir"
+                                    onchange="offline.CagriDetay.util.sehirBazliIlceGetir(mst,'EKRAN')"></select>
+                        </div>
+
+                        <div class="ui-field-contain">
+                            <label for="slcIlce">Ýlçe</label>
+                            <select id="slcIlce" name="slcIlce" onchange=""></select>
+                        </div>
+
+                        <div class="ui-field-contain">
+                            <label for="txtSemt">Semt/Köy</label>
+                            <input type="text"  id="txtSemt" name="txtSemt"/>
+                        </div>
+
+                        <div class="ui-field-contain">
+                            <label for="txtMahalle">Mahalle</label>
+                            <input type="text" id="txtMahalle" name="txtMahalle"/>
+                        </div>
+
+                        <div class="ui-field-contain">
+                            <label for="txtCadde">Cadde</label>
+                            <input type="text"  id="txtCadde" name="txtCadde"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtSokak">Sokak</label>
+                            <input type="text"  id="txtSokak" name="txtSokak"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtApartman">Apartman/Site</label>
+                            <input type="text"  id="txtApartman" name="txtApartman"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtApartmanNo">Apartman No</label>
+                            <input type="text"  id="txtApartmanNo" name="txtApartmanNo"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtBlok">Blok</label>
+                            <input type="text"  id="txtBlok" name="txtBlok"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtDaireNo">Daire No</label>
+                            <input type="text"  id="txtDaireNo" name="txtDaireNo"/>
+                        </div>
+                    </div>
+
+
+                    <div data-role="collapsible-set">
+                        <div data-collapsed-icon="plus" data-role="collapsible" data-collapsed="true" class="note-tab">
+                            <h4>Notlar</h4>
+                            <div class="ui-body ui-body-a ui-corner-all nav-box">
+                                <div class="ui-field-contain">
+                                    <label for="txtServisNot">Servis Uyarý Notu</label>
+                                    <textarea readonly="readonly" id="txtServisNot" rows="2" name="txtServisNot"
+                                              wrap="soft"></textarea>
+                                </div>
+                                <div class="ui-field-contain">
+                                    <label for="txtMerkezNot">Merkez Uyarý Notu</label>
+                                    <textarea readonly="readonly" id="txtMerkezNot" rows="2" name="txtMerkezNot"
+                                              wrap="soft"></textarea>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="tab3" class="ui-content">
+                <div class="ui-toolbar ui-header">
+                    <div class="ui-btn-left ui-controlgroup ui-controlgroup-horizontal ui-corner-all">
+                        <div class="ui-controlgroup-controls btn-controls">
+                            <a href="#urunEkle" data-role="button" class="ui-btn ui-shadow ui-corner-all"
+                               onclick="offline.util.getUrunler('')" id="btnUrunSec"><span><i class="fa fa-list"
+                                                                                              aria-hidden="true"></i></span>Ürün
+                                Seç</a>
+                            <a href="#urunSil" data-role="button" class="ui-btn ui-shadow ui-corner-all"
+                               id="btnUrunSil"><span><i class="fa fa-trash" aria-hidden="true"></i></span>Ürün Sil</a>
+                            <a href="#mamAnaGrpDegistir" data-role="button" class="ui-btn ui-shadow ui-corner-all"
+                               id="btnMamAnaGrpDegistir"><span><i class="fa fa-refresh" aria-hidden="true"></i></span>
+                                Ürün Ana Grubu Deðiþtir</a>
+                            <a href="#" data-role="button" class="ui-btn ui-shadow ui-corner-all"
+                               id="btnGarantiSorgu"><span><i class="fa fa-share-square-o" aria-hidden="true"></i></span>
+                                Garanti Sorgula</a>
+                        </div>
+                    </div>
+                    <span class="ui-title"></span>
+                </div>
+
+                <div class="ui-body ui-body-a ui-corner-all nav-box">
+                    <div class="ui-field-contain">
+                        <label for="txtMamAnagrp1">Ürün Ana Grubu</label>
+                        <input type="text" readonly id="txtMamAnagrp1" name="txtMamAnagrp1"/>
+                    </div>
+
+                    <div class="ui-field-contain">
+                        <label for="txtUrunKodu">Ürün Kodu</label>
+                        <input type="text" readonly id="txtUrunKodu" name="txtUrunKodu"
+                               onchange="mstKaydet('ACIK','EKRAN')"/>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="txtUrunAdi">Ürün Adý</label>
+                        <input type="text" readonly id="txtUrunAdi" name="txtUrunAdi"
+                               onchange="mstKaydet('ACIK','EKRAN')"/>
+                    </div>
+
+                </div>
+                <div class="ui-body ui-body-a ui-corner-all nav-box">
+                    <div class="ui-field-contain">
+                        <div style="width: 22%; float: left;">
+                            <label for="txtBarkod">Seri No</label>
+                        </div>
+                        <div style="width: 78%; float: right;">
+                            <div style="float: left; width: 85%">
+                                <input type="text" id="txtBarkod" name="txtBarkod"/>
+                            </div>
+                            <div style="float: right; width: 15%">
+                                <a href="#" data-ro
+                                   le="button" class="ui-btn ui-shadow ui-corner-all"
+                                   id="btnSeriSorgu"><span><i class="fa fa-question-circle-o"
+                                                              aria-hidden="true"></i></span></a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ui-body ui-body-a ui-corner-all nav-box">
+                    <div class="ui-field-contain">
+                        <label for="txtSatisTarihi">Fatura Tarihi</label>
+                        <input type="date" id="txtSatisTarihi" name="txtSatisTarihi"
+                               onblur="mstKaydet('ACIK','EKRAN')"/>
+                    </div>
+
+                    <div class="ui-field-contain">
+                        <label for="slcGaranti">Garanti</label>
+                        <select id="slcGaranti" name="slcGaranti" onchange="mstKaydet('ACIK', 'EKRAN')">
+                            <option value="VAR">Var</option>
+                            <option value="YOK">Yok</option>
+                        </select>
+                    </div>
+
+                    <div class="ui-field-contain">
+                        <label for="slcMesguliyet">Meþguliyet</label>
+                        <select id="slcMesguliyet" name="slcMesguliyet">
+                            <option value="VAR">Var</option>
+                            <option value="YOK">Yok</option>
+                        </select>
+                    </div>
+
+                    <!--div class="ui-field-contain">
+                        <label for="slcNobet">Nöbet</label>
+                        <select id="slcNobet" name="slcNobet">
+                            <option value="VAR">Var</option>
+                            <option value="YOK">Yok</option>
+                        </select>
+                    </div-->
+
+                </div>
+            </div>
+            <div id="tab4" class="ui-content">
+                <div data-role="tabs">
+                    <div data-role="navbar" data-iconpos="left" class="ui-navbar nav-green">
+                        <ul>
+                            <li><a href="#servis" id="btncagri" class="ui-btn-active green-tab" data-ajax="false">Servis
+                                Bilgileri</a></li>
+                            <li><a href="#tarihce" id="btnurun" class="green-tab" data-ajax="false">Ýþlem
+                                Tarihçesi</a></li>
+
+                        </ul>
+                    </div>
+
+                    <div id="servis" role="tabpanel" aria-hidden="true" class="ui-body ui-body-a ui-corner-all nav-box">
+                        <div class="ui-field-contain">
+                            <label for="txtIslemBasTar">Ýþlem Baþ. Tarihi</label>
+                            <input type="text" readonly id="txtIslemBasTar" name="txtIslemBasTar"
+                                   onchange="mstKaydet('ACIK','EKRAN')"/>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label for="txtIslemBitTar">Ýþlem Bit. Tarihi</label>
+                            <input type="text" readonly id="txtIslemBitTar" name="txtIslemBitTar"
+                                   onchange="mstKaydet('ACIK','EKRAN')"/>
+                        </div>
+                        <div class="ui-field-contain" id="divBeklemeNedeni">
+                            <label for="slcBeklemeNedeni"> Bekleme Nedeni :</label>
+                            <select id="slcBeklemeNedeni" name="slcBeklemeNedeni">
+                                <option selected></option>
+                                <option value="SERVIS">Servis</option>
+                                <option value="BAYI">Bayi</option>
+                                <option value="MUSTERI">Müþteri</option>
+                            </select>
+                        </div>
+                        <div class="ui-field-contain" id="divBeklemeKaynak">
+                            <label for="slcBeklemeKaynak"> Bekleme Kaynaðý :</label>
+                            <select id="slcBeklemeKaynak" name="slcBeklemeKaynak">
+                                <option></option>
+                            </select>
+                        </div>
+
+                        <div class="ui-field-contain">
+                            <button id="btnIslemBalat" onclick="setIslemTarihce()" title="BASLA" data-theme="a"
+                                    class="toolbar-btn">Ýþlem Baþlat
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div id="tarihce" role="tabpanel" aria-hidden="true">
+                        <div class="ui-body ui-body-a ui-corner-all nav-box">
+                            <table data-role="table" id="tblIslemTarihce"
+                                   class="ui-body-d ui-shadow table-stripe ui-responsive">
+                                <thead>
+                                <tr class="ui-bar-d">
+                                    <th>Durum</th>
+                                    <th>Ýþlem Tarihi</th>
+                                    <th>Ýþlem Bitiþ Tarihi</th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="tab5" class="ui-content">
+                <div class="ui-toolbar ui-header">
+                    <div class="ui-btn-left ui-controlgroup ui-controlgroup-horizontal ui-corner-all">
+                        <div class="ui-controlgroup-controls btn-controls ">
+                            <a class=" ui-link ui-btn" id="btnYeniDetay">
+                                <span><i class="fa fa-plus" aria-hidden="true"></i></span>Yeni
+                            </a>
+
+
+                        </div>
+                    </div>
+                    <span class="ui-title"></span>
+                    <div class="ui-btn-right ui-controlgroup btn-controls ui-controlgroup-horizontal ui-corner-all">
+                        <a class="ui-link ui-btn" id="btnSiparis">
+                            <span><i class="fa fa-plus" aria-hidden="true"></i></span>Sipariþ Oluþtur
+                        </a>
+                    </div>
+                </div>
+                <table class="ui-body-d ui-shadow table-stripe ui-responsive" id="tblHizDetaylar" name="tblHizDetaylar"
+                       data-role="table"
+                       data-mode="reflow">
+                    <thead>
+                    <tr>
+                        <th>Ýþlem Tipi</th>
+                        <th>Ýþlem Kodu</th>
+                        <th>Miktar</th>
+                        <th>Tutar</th>
+                        <th></th>
+                    </tr>
+
+                    </thead>
+                    <tfoot>
+                    <tr style="font-weight: bold; color: #556d3e !important;">
+                        <td></td>
+                        <td colspan="2" style="text-align: right;">KDV'li Toplam Tutar:</td>
+                        <td><span id="txtToplamTutar"/></td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
+                    <tbody></tbody>
+                </table>
+
+                <div data-role="collapsible-set">
+                    <div data-collapsed-icon="plus" data-role="collapsible" data-collapsed="false">
+                        <h4>Kapatma Ýþlemleri</h4>
+                        <div class="ui-toolbar ui-header">
+                            <div class="ui-btn-left ui-controlgroup ui-controlgroup-horizontal ui-corner-all">
+                                <div class="ui-controlgroup-controls btn-controls">
+                                    <a class="ui-link ui-btn" id="btnKapat" onclick="mstKaydet('KAPALI','EKRAN')">
+                                        <span><i class="fa fa-lock" aria-hidden="true"></i></span>Kapat
+                                    </a>
+                                    <a class="ui-link ui-btn" id="btnIptal">
+                                        <span><i class="fa fa-times" aria-hidden="true"></i></span>Ýptal
+                                    </a>
+                                    <a class="ui-link ui-btn" id="btnYazdir" href="#yazicilar" data-rel="popup"
+                                       data-transition="slideup">
+                                        <span><i class="fa fa-print" aria-hidden="true"></i></span>Yazdýr
+                                    </a>
+                                    <a class="ui-link ui-btn" id="btnSIL">
+                                        <span><i class="fa fa-trash" aria-hidden="true"></i></span>Sil
+                                    </a>
+                                    <a class="ui-link ui-btn" id="btnAnket">
+                                        <span><i class="fa fa-list-alt" aria-hidden="true"></i></span>Anket
+                                    </a>
+                                </div>
+                            </div>
+                            <span class="ui-title"></span>
+                            <div class="ui-btn-right ui-controlgroup ui-controlgroup-horizontal ui-corner-all">
+                            </div>
+                        </div>
+                        <div class="ui-body ui-body-a ui-corner-all nav-box">
+                            <div class="ui-field-contain">
+                                <label for="txtkapatmaAciklama">Açýklama</label>
+                                <textarea
+                                        class="textarea-input ui-input-text ui-shadow-inset ui-body-inherit ui-corner-all ui-focus"
+                                        maxlength="2000" id="txtkapatmaAciklama"
+                                        rows="3" data-role="none" name="txtkapatmaAciklama" wrap="soft"></textarea>
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="slckapatmaSekli">Kapatma Þekli</label>
+                                <select name="slckapatmaSekli" id="slckapatmaSekli"
+                                        onchange="mstKaydet('ACIK', 'EKRAN')">
+                                    <option value=""></option>
+                                    <option selected="selected" value="NORMAL">Normal Kapatma</option>
+                                    <option value="MESGULIYET">Mesguliyet Kapatma</option>
+                                </select>
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="slcOdemeSekli">Ödeme Tipi</label>
+                                <select name="slcOdemeSekli" id="slcOdemeSekli" onchange="mstKaydet('ACIK', 'EKRAN')">
+                                    <option value=""></option>
+                                    <option selected="selected" value="NAKIT">Nakit</option>
+                                    <option value="KK">Kredi Kartý</option>
+                                </select>
+                            </div>
+                            <div class="ui-field-contain">
+                                <label for="slcCozumKodu">Çözüm Kodu</label>
+                                <select name="slcCozumKodu" id="slcCozumKodu"
+                                        onchange="mstKaydet('ACIK', 'EKRAN')"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="yazicilar" data-role="popup" data-theme="a">
+
+        <div class="ui-popup ui-body-inherit ui-overlay-shadow ui-corner-all">
+            <div class="ui-header">
+                <a href="#" class="ui-btn ui-corner-all ui-icon-delete ui-btn-icon-notext ui-btn-left"
+                   data-rel="back"></a>
+                <h1 class="ui-title" role="heading">Yazýcýlar</h1>
+            </div>
+            <div class="ui-content" role="main">
+                <ul data-role="listview" id="yazicilarList" data-inset="true">
+                    <li data-role="list-divider">Yazýcý seciniz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="col-left">
+        <img class="footer-logo" src="images/sos-logo.png">
+    </div>
+    <div class="col-right">
+        <h6 class="ui-title" role="heading" aria-level="1" id="txtFooter">SOS Servis Otomasyon Sistemi (SOS)</h6>
+    </div>
+
+</div>
+
+</div>
+
+<!--Ürün Ekleme-->
+<div data-role="page" data-position="fixed" id="urunEkle" class="tab-page">
+    <div data-role="header" class="header-bar">
+        <a href="#mainpage" class="toolbar-btn ui-btn-left ui-btn" data-role="button" id="btnGeri"
+           role="button"><span><i class="fa fa-arrow-left" aria-hidden="true"></i></span>Geri</a>
+        <h3>Ürünler</h3>
+    </div>
+    <div role="main" id="urunEkleMain" class="ui-content">
+        <div id="paging_container1">
+            <div>
+                <input id="urunSorgu" placeholder="Ürün Kodu veya Adý">
+                <a href="#" onclick="offline.util.getUrunler('sorgu')"
+                   class="btn-query toolbar-btn ui-btn ui-btn-icon-left ui-shadow ui-corner-all"
+                   data-role="button" id="btnGeri"><span><i class="fa fa-search"
+                                                            aria-hidden="true"></i></span>Sorgula</a>
+            </div>
+            <div class="page_navigation"></div>
+            <div class="info_text"></div>
+            <ul id="urunEkleListe" class="content" data-role="listview" data-inset="true"></ul>
+        </div>
+    </div>
+
+</div>
+
+<!--Ürün Ana Grup Deðiþtirme-->
+<div data-role="page" data-position="fixed" id="urunAnaGrpEkle" class="tab-page">
+    <div data-role="header" class="header-bar">
+        <a href="#mainpage" class="toolbar-btn ui-btn-left ui-btn" data-role="button" id="btnGeri"
+           role="button"><span><i class="fa fa-arrow-left" aria-hidden="true"></i></span>Geri</a>
+        <h3>Ürünler</h3>
+    </div>
+    <div role="main" id="urunAnaGrpEkleMain" class="ui-content">
+        <div id="paging_container1">
+            <select id="urunAnaGrpList"></select>
+            <select id="urunAnaGrpBasvuruList"></select>
+            <a href="#" class="toolbar-btn ui-btn ui-btn-icon-left ui-shadow ui-corner-all btn-query" data-role="button"
+               id="btnUrunAnaGrpDegistir">
+                <span><i class="fa fa-refresh" aria-hidden="true"></i></span>Deðiþtir</a>
+
+        </div>
+    </div>
+
+</div>
+
+<!--Garanti Sorgulama-->
+<div id="garantiSorgu" data-role="page" class="tab-page">
+    <div data-role="header" class="header-bar">
+        <a href="#mainpage" class="toolbar-btn ui-btn-left ui-btn" data-role="button" id="btnGeri"
+           role="button"><span><i class="fa fa-arrow-left" aria-hidden="true"></i></span>Geri</a>
+        <h3>Ürün Garanti Bilgileri</h3>
+    </div>
+
+    <div class="ui-content" data-role="main" id="garantiSorguMain">
+
+    </div>
+
+</div>
+
+<!--Detay Ýþlemleri-->
+<div id="detayEkle" data-role="page" data-position="fixed" class="tab-page">
+    <div data-role="header" class="header-bar">
+        <a href="#mainpage" class="ui-btn ui-btn-icon-left toolbar-btn" data-role="button" id="btnGeri"><span><i
+                class="fa fa-arrow-left" aria-hidden="true"></i></span>Geri</a>
+        <h3>Detay P/Ý/Y Bilgileri</h3>
+    </div>
+
+    <div class="ui-content" data-role="main" id="detayEkleMain">
+
+        <div class="ui-field-contain">
+            <label for="slcIslemTip">Ýþlem Tipi</label>
+            <select name="slcIslemTip" id="slcIslemTip">
+                <option value=""></option>
+                <option value="ISC">Ýþçilik(ISC)</option>
+                <option value="MLZ">Parça(MLZ)</option>
+                <option value="KM">Yol(KM)</option>
+                <option value="DGR">Diðer(DGR)</option>
+            </select>
+            <input type="hidden" id="txtIslemTip"/>
+        </div>
+
+        <div class="ui-field-contain">
+            <label for="txtIslemKodu">Ýþlem Kodu</label>
+            <fieldset data-role="controlgroup" data-type="horizontal" data-filter="true" data-input="txtIslemKodu">
+                <div class="islemkodu-input"><input type="text" name="txtIslemKodu" id="txtIslemKodu"
+                                                    data-wrapper-class="controlgroup-textinput"></div>
+                <a href="#islemListeGosterim" class="toolbar-btn input-btn ui-btn" data-rel="popup"
+                   data-transition="slideup" data-role="button"
+                   id="btnIslemLow"><span><i class="fa fa-search" aria-hidden="true"></i></span></a>
+            </fieldset>
+        </div>
+
+        <div class="ui-field-contain">
+            <label for="txtArizaKodu">Arýza Kodu</label>
+            <fieldset data-role="controlgroup" data-type="horizontal">
+                <div class="islemkodu-input"><input type="text" name="txtArizaKodu" id="txtArizaKodu"
+                                                    data-wrapper-class="controlgroup-textinput ui-input"></div>
+                <a href="#arizaListeGosterim" class="toolbar-btn input-btn ui-btn" data-rel="popup"
+                   data-transition="slideup" data-role="button"
+                   id="btnArizaLow"><span><i class="fa fa-search" aria-hidden="true"
+                                             style="top: 200px; left: 200px; "></i></span> </a>
+            </fieldset>
+        </div>
+
+        <div class="ui-field-contain">
+            <label for="txtDetayKodu">P/Ý/Y Kodu</label>
+            <fieldset data-role="controlgroup" data-type="horizontal">
+                <div class="islemkodu-input"><input type="text" name="txtDetayKodu" id="txtDetayKodu"
+                                                    data-wrapper-class="controlgroup-textinput"></div>
+                <a href="#detayListeGosterim" onclick="getDetaySorgu()" class="toolbar-btn input-btn " data-rel="popup"
+                   data-transition="slideup"
+                   data-role="button" id="btnDetaylar1"><span><i class="fa fa-search" aria-hidden="true"></i></span></a>
+            </fieldset>
+        </div>
+
+        <div class="ui-field-contain">
+            <label for="txtDetayAciklama">P/Ý/Y Açýklama</label>
+            <input type="text" name="txtDetayAciklama" id="txtDetayAciklama">
+        </div>
+
+        <div class="ui-field-contain" id="divMiktar">
+            <label for="txtDetayMiktar">Miktar</label>
+            <input type="text" id="txtDetayMiktar">
+        </div>
+
+        <div class="ui-field-contain" id="divBirimFiyat">
+            <label for="txtDetayBirimFiyat">Birim Fiyat</label>
+            <input type="number" id="txtDetayBirimFiyat">
+        </div>
+
+        <input type="hidden" id="txtSatirNo"/>
+        <div class="ui-field-contain" id="divButtons">
+            <a href="#" class="toolbar-btn" data-role="button" id="btnDetayKaydet"><span><i class="fa fa-check"
+                                                                                            aria-hidden="true"></i></span>Kaydet</a>
+        </div>
+    </div>
+
+    <div id="detayListeGosterim" data-role="popup" data-theme="c" data-overlay-theme="c" data-dismissible="false">
+        <div data-role="header" data-theme="a">
+            <h1>P/Ý/Y </h1>
+            <a class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-icon-notext ui-btn-inherit ui-shadow ui-corner-all"
+               href="#" data-rel="back"></a>
+        </div>
+        <div class="ui-content" role="main">
+            <ul id="detaylarListe" data-filter-placeholder="Kod veya Ad Giriniz" data-filter="true" data-role="listview"
+                data-inset="true"></ul>
+        </div>
+    </div>
+
+    <div id="islemListeGosterim" data-role="popup" data-theme="c" data-overlay-theme="c" data-dismissible="false">
+        <div data-role="header" data-theme="a">
+            <h1> Ýþlem Gruplarý </h1>
+            <a class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-icon-notext ui-btn-inherit ui-shadow ui-corner-all"
+               href="#" data-rel="back"></a>
+        </div>
+        <div class="ui-content" role="main">
+            <ul id="lstIslem" data-filter-placeholder="Kod veya Ad Giriniz" data-filter="true" data-role="listview"
+                data-inset="true"></ul>
+        </div>
+    </div>
+
+    <div id="arizaListeGosterim" data-role="popup" data-theme="c" data-overlay-theme="c" data-dismissible="false">
+        <div data-role="header" data-theme="a">
+            <h1>Arýza Gruplarý </h1>
+            <a class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-icon-notext ui-btn-inherit ui-shadow ui-corner-all"
+               href="#" data-rel="back"></a>
+        </div>
+        <div class="ui-content" role="main">
+            <ul id="lstAriza" data-filter-placeholder="Kod veya Ad Giriniz" data-filter="true" data-role="listview"
+                data-inset="true"></ul>
+        </div>
+    </div>
+
+</div>
+
+<script src="scripts/dao/CagriDao.js"></script>
+<script src="scripts/dao/AnketDao.js"></script>
+<script src="scripts/domain/HizmetMst.js"></script>
+<script src="scripts/domain/HizmetDet.js"></script>
+<script src="scripts/domain/Urun.js"></script>
+<script src="scripts/dao/UrunDao.js"></script>
+<script src="scripts/dao/UrunIscDao.js"></script>
+<script src="scripts/dao/IslemArizaIscDao.js"></script>
+<script src="scripts/domain/IslemArizaIsc.js"></script>
+<script src="scripts/domain/UrunAnaGrp.js"></script>
+<script src="scripts/dao/UrunAnaGrpDao.js"></script>
+<script src="scripts/util/lovAndComboUtil.js"></script>
+<script src="scripts/dao/FiyatDao.js"></script>
+<script src="scripts/dao/UrunMlzDao.js"></script>
+<script src="scripts/domain/Fiyat.js"></script>
+<script src="scripts/domain/UrunMlz.js"></script>
+<script src="scripts/domain/Hizmetler.js"></script>
+<script src="scripts/page/CagriDetay.js"></script>
+<script src="scripts/page/CagriDetayUtil.js"></script>
+<script src="scripts/page/Anket.js"></script>
+<script src="scripts/util/serviceCallbackObj.js"></script>
+<script src="scripts/util/Print.js"></script>
+<script src="scripts/util/PrintData.js"></script>
+<script src="scripts/page/PrintData.js"></script>
+<script src="scripts/service/UrunService.js"></script>
+<script src="scripts/dao/SehirIlceDao.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html;charset =windows-1254">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script src="scripts/lib/jquery-2.1.4.min.js"></script>
+    <script src="cordova.js" ></script>
+    <script src="platformOverrides.js"></script>
+    <script charset="windows-1254" src="scripts/domain/offline.js"></script>
+    <script src="scripts/util/FrontEnd.js"></script>
+    <script>
+        var toLoadCssFiles = [];
+        toLoadCssFiles.push("jquery.mobile-1.4.5.css");
+        toLoadCssFiles.push("green/css/style.css");
+        toLoadCssFiles.push("login.css");
+        toLoadCssFiles.push("toastr.css");
+        FrontEnd.loadCsswithJs(toLoadCssFiles);
+    </script>
+    <script charset="windows-1254" src="scripts/util/util.js"></script>
+    <script charset="windows-1254" src="scripts/util/database.js"></script>
+    <script charset="windows-1254" src="scripts/util/connection.js"></script>
+    <script charset="windows-1254" src="scripts/util/init.js"></script>
+    <script src="scripts/domain/App.js"></script>
+    <script src="scripts/domain/User.js"></script>
+    <script src="scripts/dao/UserDao.js"></script>
+    <script src="scripts/page/Login.js"></script>
+    <script src="scripts/util/Messages.js"></script>
+    <script src="scripts/service/LoginService.js"></script>
+    <script src="scripts/service/WsService.js"></script>
+    <script src="scripts/lib/platformOverrides.js"></script>
+    <script src="scripts/lib/jquery.mobile-1.4.5.min.js"></script>
+    <script src="scripts/lib/toastr.js"></script>
+    <script src="scripts/util/Toastr.js"></script>
+    <script src="scripts/util/noZoom.js"></script>
+
+        <!-- START: BOOTSTRAP JS -->
+        <script src="bootstrap/js/src/alert.js"></script>
+        <script src="bootstrap/js/src/button.js"></script>
+        <script src="bootstrap/js/src/carousel.js"></script>
+        <script src="bootstrap/js/src/collapse.js"></script>
+        <script src="bootstrap/js/src/dropdown.js"></script>
+        <script src="bootstrap/js/src/modal.js"></script>
+        <script src="bootstrap/js/src/popover.js"></script>
+        <script src="bootstrap/js/src/tab.js"></script>
+        <script src="bootstrap/js/src/util.js"></script>
+        <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    
+        <!-- END: BOOTSTRAP JS -->
+        
+        <!-- START: BOOTSTRAP CSS -->
+        <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap-grid.min.css"/>
+        <!-- END: BOOTSTRAP CSS -->
+    <title>SOS Servis Otomasyon Sistemi</title>
+</head>
+<body>
+<hgroup>
+    <h1>Servis Otomasyon Sistemi (SOS)</h1>
+    <img src="images/sos-logo-green.png"/>
+</hgroup>
+
+<form class="login-form">
+    <div class="group login-page">
+        <input type="text" placeholder="Kullanýcý kodu" name="txtUser"><span class="highlight"></span><span
+            class="bar"></span>
+    </div>
+    <div class="group">
+        <input type="password" placeholder="Þifre" name="txtPass"><span class="highlight"></span><span
+            class="bar"></span>
+    </div>
+
+    <button type="button" id="btnLogin" class="button buttonBlue toolbar-btn">
+        Giriþ
+        <div class="ripples buttonRipples">
+            <span class="ripplesCircle"></span>
+        </div>
+    </button>
+
+</form>
+</body>
+
+</html>

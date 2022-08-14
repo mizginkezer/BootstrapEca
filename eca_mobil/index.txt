@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="content-type" content="text/html;charset =windows-1254">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script src="scripts/util/FrontEnd.js"></script>
+    <script src="scripts/domain/offline.js"></script>
+    <script src="cordova.js"></script>
+    <script src="platformOverrides.js"></script>
+    <script>
+        var toLoadCssFiles = [];
+        toLoadCssFiles.push("jquery.mobile-1.4.5.css");
+        toLoadCssFiles.push("toastr.css");
+        toLoadCssFiles.push("green/css/style.css");
+        toLoadCssFiles.push("green/colors/green/green.css");
+        toLoadCssFiles.push("green/css/swipebox.css");
+        toLoadCssFiles.push("loader.css");
+        FrontEnd.loadCsswithJs(toLoadCssFiles);
+    </script>
+    <script src="scripts/lib/jquery-2.1.4.min.js"></script>
+    <script src="scripts/domain/App.js"></script>
+    <script src="scripts/lib/jquery.mobile-1.4.5.min.js"></script>
+    <script src="scripts/lib/platformOverrides.js"></script>
+    <script src="scripts/util/init.js"></script>
+    <script src="scripts/lib/toastr.js"></script>
+    <script src="scripts/service/WsService.js"></script>
+    <script src="scripts/service/UrunService.js"></script>
+    <script src="scripts/service/CagriService.js"></script>
+    <script src="scripts/util/Toastr.js"></script>
+    <script src="scripts/util/util.js"></script>
+    <script src="scripts/util/connection.js"></script>
+    <script src="scripts/util/database.js"></script>
+    <script src="scripts/util/serviceCallbackObj.js"></script>
+    <script src="scripts/dao/UrunMlzDao.js"></script>
+    <script src="scripts/dao/AlertDao.js"></script>
+    <script src="scripts/util/Messages.js"></script>
+    <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script>
+
+    <!-- START: BOOTSTRAP JS -->
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bootstrap/dist/js/src/alert.js"></script>
+    <script src="bootstrap/dist/js/src/button.js"></script>
+    <script src="bootstrap/dist/js/src/carousel.js"></script>
+    <script src="bootstrap/dist/js/src/collapse.js"></script>
+    <script src="bootstrap/dist/js/src/dropdown.js"></script>
+    <script src="bootstrap/dist/js/src/modal.js"></script>
+    <script src="bootstrap/dist/js/src/popover.js"></script>
+    <script src="bootstrap/dist/js/src/tab.js"></script>
+    <!-- END: BOOTSTRAP JS -->
+    
+    <!-- START: BOOTSTRAP CSS -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="bootstrap/dist/css/bootstrap-grid.min.css"/>
+    <!-- END: BOOTSTRAP CSS -->
+
+
+    <title>SOS Servis Otomasyon Sistemi</title>
+    <!-- Green theme -->
+    <!--ink type="text/css" rel="stylesheet" href="../../css/sos/green/css/style.css"/>
+    <link type="text/css" rel="stylesheet" href="../../css/sos/green/colors/green/green.css"/>
+    <link type="text/css" rel="stylesheet" href="../../css/sos/green/css/swipebox.css"/-->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&amp;subset=latin-ext" rel="stylesheet">
+    <!-- Green theme -->
+
+</head>
+
+<body>
+<div data-role="page" id="one" data-theme="a" data-url="one">
+    <div id="header">
+        <div class="gohome radius20">
+            <a onclick="offline.util.navigator('index.html')" id="homebutton">
+                <i class="fa fa-list green-icon" aria-hidden="true"></i>
+                <span id="bekleyenCagriAdet" style="font-size:16px">0</span>
+            </a>
+        </div>
+        <div class="gohome radius20">
+            <a onclick="offline.util.navigator('Mesajlar.html?type=WARN')" id="contactbutton">
+                <i class="fa fa-bullhorn green-icon" aria-hidden="true"></i>
+                <span id="bekleyenUyariAdet" style="font-size:16px">0</span>
+            </a>
+        </div>
+        <div class="gohome radius20">
+            <a onclick="offline.util.navigator('Mesajlar.html?type=URGENT')" id="contactbutton">
+                <i class="fa fa-bell-o green-icon" aria-hidden="true"></i>
+                <span id="bekleyenDuyuruAdet" style="font-size:16px">0</span>
+            </a>
+        </div>
+        <div class="gohome radius20">
+            <a onclick="offline.util.navigator('guncelle.html')" id="contactbutton">
+                <i class="fa fa-refresh green-icon" aria-hidden="true"></i>
+                <span id="bekleyenGuncellemeAdet" style="font-size:16px">0</span>
+            </a>
+        </div>
+        <div class="gomenu radius20">
+            <a onclick="offline.util.exitApp()" id="contactbutton">
+                <i class="fa fa-sign-out green-icon" aria-hidden="true"></i>
+            </a>
+        </div>
+        <div class="gomenu radius20">
+            <a onclick="offline.util.navigator('MainPage.html')" id="contactbutton">
+                <i class="fa fa-home green-icon" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+
+    <div data-role="main" class="main-content" data-position="fixed">
+        <div class="ui-grid-a query-main" data-role="collapsible" data-collapsed="true">
+
+            <h4>Sorgu Kriterleri</h4>
+            <div class="ui-field-contain">
+                <label for="txtCagriNo">Çaðrý No</label>
+                <input type="text" name="txtCagriNo" id="txtCagriNo" data-clear-btn="true"/>
+
+            </div>
+
+            <div class="ui-field-contain">
+                <label>Çaðrý Durumu</label>
+                <div class="select">
+                    <select id="slcDurum">
+                        <option value="ACIK">Açýk</option>
+                        <option value="KAPALI">Kapalý</option>
+                        <option value="IPTAL">Ýptal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ui-field-contain">
+                <label>Randevu Tarihi</label>
+                <input type="date" id="dtRandevu" class="date-input" data-role="date">
+                <input type="date" id="dtRandevu2" class="date-input" data-role="date">
+            </div>
+
+            <div class="ui-field-contain">
+                <label>Müþteri Adý</label>
+                <input type="text" id="txtMusteri" data-clear-btn="true"/>
+
+            </div>
+            <div class="ui-field-contain">
+                <label>Müþteri Soyadý</label>
+                <input type="text" id="txtMusteriSoyadi" data-clear-btn="true"/>
+            </div>
+
+            <div class="ui-field-contain">
+                <label>CRM No</label>
+                <input type="text" id="txtCrmNo" data-clear-btn="true"/>
+            </div>
+
+
+            <div class="ui-field-contain">
+                <label>Müþteri Ünvan </label>
+                <input type="text" id="txtMusteriUnvani" data-clear-btn="true"/>
+            </div>
+
+            <div class="ui-field-contain">
+                <label>Telefonu</label>
+                <input type="number" id="txtTelefon" data-clear-btn="true"/>
+            </div>
+
+
+            <div class="ui-field-contain">
+                <label class="ui-outputlabel ui-widget" for="iletisimIstekDiv">Randevu Tarihine Göre Sýralama</label>
+                <form>
+                    <fieldset data-role="controlgroup" data-type="horizontal">
+                        <input name="orderBy" id="orderBya" type="radio" value="true">
+                        <label for="orderBya">A-Z</label>
+                        <input name="orderBy" id="orderByb" type="radio" checked="checked" value="false">
+                        <label for="orderByb">Z-A</label>
+
+                    </fieldset>
+                </form>
+
+            </div>
+
+        </div>
+        <div>
+            <div class="ui-field-contain btns">
+                <a class="toolbar-btn ui-link" id="btnSorgu">
+                        <span>
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </span>Sorgula
+                </a>
+
+                <a class="toolbar-btn ui-link" id="btnCagriGuncelle">
+                        <span>
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </span>Güncelle
+                </a>
+
+
+            </div>
+
+            <div id="sorguSonucPage"></div>
+            <br/>&nbsp;
+            <br/>
+            <ul id="list-lazyloader" data-role="listview" data-theme="d"></ul>
+
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="col-left">
+            <img class="footer-logo" src="images/sos-logo.png">
+        </div>
+        <div class="col-right">
+            <h4 class="ui-title" role="heading" aria-level="1" id="txtFooter">SOS Servis Otomasyon Sistemi (SOS)</h4>
+        </div>
+
+    </div>
+
+
+    <div data-role="panel" id="nav-panel" data-position="left" data-display="push" data-dismissible="true"
+         data-theme="c"
+         class="ui-panel ui-panel-position-left ui-panel-display-push ui-body-a ui-panel-animate ui-panel-open">
+        <ul data-role="listview" id="listMenu"></ul>
+        <hr/>
+        <br/>
+        <div>
+            <div data-position="fixed" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-user"
+                 id="txtKullanici"></div>
+
+            <div data-position="fixed" class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-shop"
+                 id="txtServis"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="map-page" data-role="page" data-url="map-page">
+    <div data-role="header" data-theme="a">
+        <h1>Maps</h1>
+    </div>
+    <div class="ui-content" id="map-canvas" role="main">
+    </div>
+</div>
+
+<script src="scripts/dao/CagriDao.js"></script>
+<script src="scripts/dao/AnketDao.js"></script>
+<script src="scripts/dao/SehirIlceDao.js"></script>
+<script src="scripts/domain/HizmetMst.js"></script>
+<script src="scripts/domain/HizmetDet.js"></script>
+<script src="scripts/page/index.js"></script>
+</body>
+
+</html>
